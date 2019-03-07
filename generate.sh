@@ -17,8 +17,8 @@ then
     if [ ! -z $TOKEN ]
     then
         cp "do.ini.example" "do.ini"
+        chmod 0600 "do.ini"
         sed -i.bak "s/TOKEN/$TOKEN/" "do.ini" && rm "do.ini.bak"
-        exit 1
     else
         echo "No token given."
         exit 1
