@@ -6,7 +6,7 @@ CONTAINER_NAME=$3
 COPYPATH=$4
 CERTNAME=${5:-wildcard}
 
-USAGE="Usage: generate.sh \"*.example.com\" \"me@example.com\" [container name: \"nginx-proxy\"] [copy path: \"/path/to/proxy/folder\"] [certname: \"wildcard\"]" 
+USAGE="Usage: generate.sh \"*.example.com\" \"me@example.com\" [container name: \"nginx-web\"] [copy path: \"/path/to/proxy/folder\"] [certname: \"wildcard\"]" 
 
 TERMINAL=$(tty)
 
