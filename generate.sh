@@ -1,24 +1,26 @@
 #/bin/bash
 
+CURDIR=`dirname "$0"`
 DOMAIN=$1
 EMAIL=$2
 CONTAINER_NAME=$3
 COPYPATH=$4
 CERTNAME=${5:-wildcard}
 
-USAGE="Usage: generate.sh \"*.example.com\" \"me@example.com\" [container name: \"nginx-web\"] [copy path: \"/path/to/proxy/folder\"] [certname: \"wildcard\"]" 
+USAGE="Usage: generate.sh \"*.example.com\" \"me@example.com\" [container name: \"nginx-web\"] [copy path: \"/path/to/proxy/folder\"] [certname: \"wildcard\"]"
 
 TERMINAL=$(tty)
+CONFIG=$CURDIR/do.ini
 
-if [ ! -e do.ini ]
+if [ ! -e $CONFIG ]
 then
     read -s -p "Enter your Digitalocean API token:" TOKEN <$TERMINAL
 
     if [ ! -z $TOKEN ]
     then
-        cp "do.ini.example" "do.ini"
-        chmod 0600 "do.ini"
-        sed -i.bak "s/TOKEN/$TOKEN/" "do.ini" && rm "do.ini.bak"
+        cp $CONFIG.example $CONFIG
+        chmod 0600 $CONFIG
+        sed -i.bak "s/TOKEN/$TOKEN/" $CONFIG && rm $CONFIG.bak
     else
         echo "No token given."
         exit 1
@@ -53,8 +55,8 @@ fi
 
 docker run --rm \
     -p 80:80 \
-    -v $(pwd)/letsencrypt:/etc/letsencrypt \
-    -v $(pwd)/do.ini:/do.ini \
+    -v $CURDIR/letsencrypt:/etc/letsencrypt \
+    -v $CURDIR/do.ini:/do.ini \
     certbot/dns-digitalocean \
     certonly \
     --non-interactive \
@@ -67,8 +69,8 @@ docker run --rm \
 
 if [ -n $COPYPATH ]
 then
-    cp $(pwd)/letsencrypt/live/$FOLDER/cert.pem $COPYPATH$CERTNAME.crt
-    cp $(pwd)/letsencrypt/live/$FOLDER/privkey.pem $COPYPATH$CERTNAME.key
+    cp $CURDIR/letsencrypt/live/$FOLDER/cert.pem $COPYPATH$CERTNAME.crt
+    cp $CURDIR/letsencrypt/live/$FOLDER/privkey.pem $COPYPATH$CERTNAME.key
 fi
 
 if [ ! -z $CONTAINER_NAME ]
